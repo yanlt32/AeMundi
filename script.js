@@ -1,139 +1,157 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize EmailJS with your User ID
-    emailjs.init('wsvc4Dlnoa4wsx3xJ');
+  // Initialize EmailJS with your User ID
+  emailjs.init('wsvc4Dlnoa4wsx3xJ');
 
-    // Hamburger menu functionality
-    const hamburger = document.querySelector('.hamburger');
-    const nav = document.querySelector('nav');
+  // Hamburger menu functionality
+  const hamburger = document.querySelector('.hamburger');
+  const nav = document.querySelector('nav');
 
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        nav.classList.toggle('active');
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    nav.classList.toggle('active');
+  });
+
+  // Smooth scroll for navigation links
+  nav.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      hamburger.classList.remove('active');
+      nav.classList.remove('active');
+
+      const targetId = link.getAttribute('href').substring(1);
+      const targetElement = document.getElementById(targetId);
+
+      if (targetElement) {
+        const headerHeight = document.querySelector('header').offsetHeight;
+        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+
+        smoothScrollTo(targetPosition, 1200);
+      }
     });
+  });
 
-    // Smooth scroll for navigation links
-    nav.querySelectorAll('a[href^="#"]').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent default anchor behavior
-            hamburger.classList.remove('active');
-            nav.classList.remove('active');
+  // Custom smooth scroll function
+  function smoothScrollTo(targetPosition, duration) {
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    let startTime = null;
 
-            const targetId = link.getAttribute('href').substring(1);
-            const targetElement = document.getElementById(targetId);
+    function animation(currentTime) {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+      const ease = easeInOutQuad(progress);
 
-            if (targetElement) {
-                const headerHeight = document.querySelector('header').offsetHeight;
-                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+      window.scrollTo(0, startPosition + distance * ease);
 
-                // Custom smooth scroll
-                smoothScrollTo(targetPosition, 1200); // 1200ms for slower, smoother scroll
-            }
-        });
-    });
-
-    // Custom smooth scroll function
-    function smoothScrollTo(targetPosition, duration) {
-        const startPosition = window.pageYOffset;
-        const distance = targetPosition - startPosition;
-        let startTime = null;
-
-        function animation(currentTime) {
-            if (startTime === null) startTime = currentTime;
-            const timeElapsed = currentTime - startTime;
-            const progress = Math.min(timeElapsed / duration, 1);
-            const ease = easeInOutQuad(progress); // Smoother easing function
-
-            window.scrollTo(0, startPosition + distance * ease);
-
-            if (timeElapsed < duration) {
-                requestAnimationFrame(animation);
-            }
-        }
-
-        // Easing function for smooth movement
-        function easeInOutQuad(t) {
-            return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-        }
-
+      if (timeElapsed < duration) {
         requestAnimationFrame(animation);
+      }
     }
 
-    // Generic Carousel functionality
-    function initCarousel(carouselSelector) {
-        const carousel = document.querySelector(carouselSelector);
-        if (!carousel) return;
+    function easeInOutQuad(t) {
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    }
 
-        const carouselInner = carousel.querySelector('.carousel-inner');
-        const carouselItems = carousel.querySelectorAll('.carousel-item');
-        const prevBtn = carousel.querySelector('.carousel-btn.prev');
-        const nextBtn = carousel.querySelector('.carousel-btn.next');
-        let currentIndex = 0;
-        let isTransitioning = false;
+    requestAnimationFrame(animation);
+  }
 
-        function showSlide(index) {
-            if (isTransitioning) return;
-            isTransitioning = true;
+  // Generic Carousel functionality
+  function initCarousel(carouselSelector) {
+    const carousel = document.querySelector(carouselSelector);
+    if (!carousel) return;
 
-            carouselItems.forEach(item => item.classList.remove('active'));
-            carouselItems[index].classList.add('active');
-            carouselInner.style.transform = `translateX(-${index * 100}%)`;
+    const carouselInner = carousel.querySelector('.carousel-inner');
+    const carouselItems = carousel.querySelectorAll('.carousel-item');
+    const prevBtn = carousel.querySelector('.carousel-btn.prev');
+    const nextBtn = carousel.querySelector('.carousel-btn.next');
+    let currentIndex = 0;
+    let isTransitioning = false;
 
-            setTimeout(() => {
-                isTransitioning = false;
-            }, 300); // Reduced from 500ms for lighter feel
-        }
+    function showSlide(index) {
+      if (isTransitioning) return;
+      isTransitioning = true;
 
-        if (prevBtn && nextBtn) {
-            prevBtn.addEventListener('click', () => {
-                currentIndex = (currentIndex === 0) ? carouselItems.length - 1 : currentIndex - 1;
-                showSlide(currentIndex);
-            });
+      carouselItems.forEach(item => item.classList.remove('active'));
+      carouselItems[index].classList.add('active');
+      carouselInner.style.transform = `translateX(-${index * 100}%)`;
 
-            nextBtn.addEventListener('click', () => {
-                currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
-                showSlide(currentIndex);
-            });
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 300);
+    }
 
-            let autoSlide = setInterval(() => {
-                currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
-                showSlide(currentIndex);
-            }, 5000);
-
-            carousel.addEventListener('mouseenter', () => clearInterval(autoSlide));
-            carousel.addEventListener('mouseleave', () => {
-                autoSlide = setInterval(() => {
-                    currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
-                    showSlide(currentIndex);
-                }, 5000);
-            });
-        }
-
+    if (prevBtn && nextBtn) {
+      prevBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex === 0) ? carouselItems.length - 1 : currentIndex - 1;
         showSlide(currentIndex);
+      });
+
+      nextBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
+        showSlide(currentIndex);
+      });
+
+      let autoSlide = setInterval(() => {
+        currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
+        showSlide(currentIndex);
+      }, 5000);
+
+      carousel.addEventListener('mouseenter', () => clearInterval(autoSlide));
+      carousel.addEventListener('mouseleave', () => {
+        autoSlide = setInterval(() => {
+          currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
+          showSlide(currentIndex);
+        }, 5000);
+      });
     }
 
-    // Initialize carousels
-    initCarousel('#eventos .carousel');
-    initCarousel('#feedbacks .carousel');
+    showSlide(currentIndex);
+  }
 
-    // Form submission with EmailJS
-    const form = document.getElementById('contato-form');
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
+  // Initialize carousels only on mobile/tablet
+  if (window.innerWidth <= 768) {
+    initCarousel('#eventos .carousel'); // Events carousel
+    initCarousel('#feedbacks .carousel'); // Testimonials carousel
+  }
 
-        const formData = {
-            nome: document.querySelector('input[name="nome"]').value,
-            email: document.querySelector('input[name="email"]').value,
-            assunto: document.querySelector('input[name="assunto"]').value || 'Sem assunto',
-            mensagem: document.querySelector('textarea[name="mensagem"]').value,
-            time: new Date().toLocaleString('pt-BR')
-        };
+  // Re-initialize carousel on window resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth <= 768) {
+      initCarousel('#eventos .carousel');
+      initCarousel('#feedbacks .carousel');
+    } else {
+      // Reset carousel styles on desktop
+      const eventosCarousel = document.querySelector('#eventos .carousel');
+      if (eventosCarousel) {
+        const carouselInner = eventosCarousel.querySelector('.carousel-inner');
+        carouselInner.style.transform = 'translateX(0)';
+        eventosCarousel.querySelectorAll('.carousel-item').forEach(item => {
+          item.style.opacity = '1';
+        });
+      }
+    }
+  });
 
-        emailjs.send('service_ah5857d', 'template_adarn91', formData)
-            .then(() => {
-                alert('Mensagem enviada com sucesso!');
-                form.reset();
-            }, (error) => {
-                alert('Erro ao enviar a mensagem: ' + error.text);
-            });
-    });
+  // Form submission with EmailJS
+  const form = document.getElementById('contato-form');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const formData = {
+      nome: document.querySelector('input[name="nome"]').value,
+      email: document.querySelector('input[name="email"]').value,
+      assunto: document.querySelector('input[name="assunto"]').value || 'Sem assunto',
+      mensagem: document.querySelector('textarea[name="mensagem"]').value,
+      time: new Date().toLocaleString('pt-BR')
+    };
+
+    emailjs.send('service_ah5857d', 'template_adarn91', formData)
+      .then(() => {
+        alert('Mensagem enviada com sucesso!');
+        form.reset();
+      }, (error) => {
+        alert('Erro ao enviar a mensagem: ' + error.text);
+      });
+  });
 });

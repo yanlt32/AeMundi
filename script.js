@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       setTimeout(() => {
         isTransitioning = false;
-      }, 300);
+      }, 500); // Match CSS transition duration (0.5s for testimonials)
     }
 
     if (prevBtn && nextBtn) {
@@ -109,19 +109,24 @@ document.addEventListener('DOMContentLoaded', () => {
     showSlide(currentIndex);
   }
 
-  // Initialize carousels only on mobile/tablet
+  // Initialize Feedbacks carousel for all screen sizes
+  initCarousel('#feedbacks .carousel');
+
+  // Initialize Eventos carousel only on mobile/tablet
   if (window.innerWidth <= 768) {
-    initCarousel('#eventos .carousel'); // Events carousel
-    initCarousel('#feedbacks .carousel'); // Testimonials carousel
+    initCarousel('#eventos .carousel');
   }
 
-  // Re-initialize carousel on window resize
+  // Re-initialize carousels on window resize
   window.addEventListener('resize', () => {
+    // Always ensure Feedbacks carousel is initialized
+    initCarousel('#feedbacks .carousel');
+
+    // Handle Eventos carousel
     if (window.innerWidth <= 768) {
       initCarousel('#eventos .carousel');
-      initCarousel('#feedbacks .carousel');
     } else {
-      // Reset carousel styles on desktop
+      // Reset Eventos carousel styles for timeline on desktop
       const eventosCarousel = document.querySelector('#eventos .carousel');
       if (eventosCarousel) {
         const carouselInner = eventosCarousel.querySelector('.carousel-inner');

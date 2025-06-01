@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(animation);
   }
 
-  // Generic Carousel functionality
+  // Generic Carousel functionality (used for Feedbacks and Eventos)
   function initCarousel(carouselSelector) {
     const carousel = document.querySelector(carouselSelector);
     if (!carousel) return;
@@ -159,4 +159,89 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Erro ao enviar a mensagem: ' + error.text);
       });
   });
+
+  // Mini Carousel for President Photos in Conversa com o Presidente
+  function initPresidentCarousel() {
+    const carousel = document.querySelector('#conversa-presidente .president-carousel');
+    if (!carousel) {
+      console.error('Carousel element not found. Please check if #conversa-presidente .president-carousel exists in the HTML.');
+      return;
+    }
+
+    const carouselInner = carousel.querySelector('.president-carousel-inner');
+    const carouselItems = carousel.querySelectorAll('.president-carousel-item');
+    let currentIndex = 0;
+    let isTransitioning = false;
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    // Verificar se há itens no carrossel
+    if (carouselItems.length === 0) {
+      console.error('No carousel items found. Please ensure elements with class .president-carousel-item exist inside .president-carousel.');
+      return;
+    }
+
+    function showSlide(index) {
+      if (isTransitioning) return;
+      isTransitioning = true;
+
+      carouselItems.forEach(item => item.classList.remove('active'));
+      carouselItems[index].classList.add('active');
+      carouselInner.style.transform = `translateX(-${index * 100}%)`;
+
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 500); // Match CSS transition duration (0.5s)
+    }
+
+    // Automatic slide every 5 seconds
+    let autoSlide = setInterval(() => {
+      currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
+      showSlide(currentIndex);
+    }, 5000);
+
+    // Pause on hover
+    carousel.addEventListener('mouseenter', () => clearInterval(autoSlide));
+    carousel.addEventListener('mouseleave', () => {
+      autoSlide = setInterval(() => {
+        currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
+        showSlide(currentIndex);
+      }, 5000);
+    });
+
+    // Touch support for swipe
+    carousel.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    });
+
+    carousel.addEventListener('touchmove', (e) => {
+      touchEndX = e.touches[0].clientX;
+    });
+
+    carousel.addEventListener('touchend', () => {
+      const swipeDistance = touchEndX - touchStartX;
+      const minSwipeDistance = 50; // Minimum distance to consider a swipe
+
+      if (Math.abs(swipeDistance) > minSwipeDistance) {
+        if (swipeDistance > 0) {
+          // Swipe right (previous)
+          currentIndex = (currentIndex === 0) ? carouselItems.length - 1 : currentIndex - 1;
+        } else {
+          // Swipe left (next)
+          currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
+        }
+        showSlide(currentIndex);
+      }
+
+      // Reset touch positions
+      touchStartX = 0;
+      touchEndX = 0;
+    });
+
+    // Initial slide
+    showSlide(currentIndex);
+  }
+
+  // Initialize President Carousel
+  initPresidentCarousel();
 });

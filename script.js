@@ -59,7 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Generic Carousel functionality (used for Feedbacks, Eventos, and Galeria)
   function initCarousel(carouselSelector) {
     const carousel = document.querySelector(carouselSelector);
-    if (!carousel) return;
+    if (!carousel) {
+      console.error(`Carousel not found for selector: ${carouselSelector}`);
+      return;
+    }
 
     const carouselInner = carousel.querySelector('.carousel-inner');
     const carouselItems = carousel.querySelectorAll('.carousel-item');
@@ -68,11 +71,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentIndex = 0;
     let isTransitioning = false;
     let touchStartX = 0;
+    let touchStartY = 0;
     let touchEndX = 0;
+    let touchEndY = 0;
+
+    // Check if carouselItems exist
+    if (carouselItems.length === 0) {
+      console.error(`No carousel items found for selector: ${carouselSelector}`);
+      return;
+    }
 
     function showSlide(index) {
       if (isTransitioning) return;
       isTransitioning = true;
+
+      // Ensure index is within bounds
+      if (index < 0 || index >= carouselItems.length) {
+        console.error(`Invalid slide index: ${index} for ${carouselSelector}`);
+        isTransitioning = false;
+        return;
+      }
 
       carouselItems.forEach(item => item.classList.remove('active'));
       carouselItems[index].classList.add('active');
@@ -98,18 +116,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Touch support for swipe
     carousel.addEventListener('touchstart', (e) => {
       touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
     });
 
     carousel.addEventListener('touchmove', (e) => {
       touchEndX = e.touches[0].clientX;
+      touchEndY = e.touches[0].clientY;
     });
 
-    carousel.addEventListener('touchend', () => {
-      const swipeDistance = touchEndX - touchStartX;
+    carousel.addEventListener('touchend', (e) => {
+      const swipeDistanceX = touchEndX - touchStartX;
+      const swipeDistanceY = touchEndY - touchStartY;
       const minSwipeDistance = 50; // Minimum distance to consider a swipe
+      const maxVerticalSwipe = 50; // Maximum vertical movement to allow horizontal swipe
 
-      if (Math.abs(swipeDistance) > minSwipeDistance) {
-        if (swipeDistance > 0) {
+      if (Math.abs(swipeDistanceX) > minSwipeDistance && Math.abs(swipeDistanceY) < maxVerticalSwipe) {
+        e.preventDefault(); // Prevent default only for horizontal swipes
+        if (swipeDistanceX > 0) {
           // Swipe right (previous)
           currentIndex = (currentIndex === 0) ? carouselItems.length - 1 : currentIndex - 1;
         } else {
@@ -121,7 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Reset touch positions
       touchStartX = 0;
+      touchStartY = 0;
       touchEndX = 0;
+      touchEndY = 0;
     });
 
     // Automatic slide every 5 seconds
@@ -146,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCarousel('#feedbacks .carousel');
   initCarousel('#galeria .gallery-carousel');
   if (window.innerWidth <= 768) {
-    initCarousel('#eventos .events-grid');
+    initCarousel('#eventos .events-carousel'); // Updated selector
   }
 
   // Re-initialize carousels on window resize
@@ -154,10 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initCarousel('#feedbacks .carousel');
     initCarousel('#galeria .gallery-carousel');
     if (window.innerWidth <= 768) {
-      initCarousel('#eventos .events-grid');
+      initCarousel('#eventos .events-carousel'); // Updated selector
     } else {
       // Reset Eventos carousel styles for grid on desktop
-      const eventosCarousel = document.querySelector('#eventos .events-grid');
+      const eventosCarousel = document.querySelector('#eventos .events-carousel');
       if (eventosCarousel) {
         const carouselInner = eventosCarousel.querySelector('.carousel-inner');
         if (carouselInner) {
@@ -191,87 +216,4 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Erro ao enviar a mensagem: ' + error.text);
       });
   });
-
-  // Mini Carousel for President Photos in Conversa com o Presidente
-  function initPresidentCarousel() {
-    const carousel = document.querySelector('#conversa-presidente .president-carousel');
-    if (!carousel) {
-      console.error('President carousel not found.');
-      return;
-    }
-
-    const carouselInner = carousel.querySelector('.carousel-inner');
-    const carouselItems = carousel.querySelectorAll('.carousel-item');
-    let currentIndex = 0;
-    let isTransitioning = false;
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    if (carouselItems.length === 0) {
-      console.error('No president carousel items found.');
-      return;
-    }
-
-    function showSlide(index) {
-      if (isTransitioning) return;
-      isTransitioning = true;
-
-      carouselItems.forEach(item => item.classList.remove('active'));
-      carouselItems[index].classList.add('active');
-      carouselInner.style.transform = `translateX(-${index * 100}%)`;
-
-      setTimeout(() => {
-        isTransitioning = false;
-      }, 500); // Match CSS transition duration (0.5s)
-    }
-
-    // Touch support for swipe
-    carousel.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
-    });
-
-    carousel.addEventListener('touchmove', (e) => {
-      touchEndX = e.touches[0].clientX;
-    });
-
-    carousel.addEventListener('touchend', () => {
-      const swipeDistance = touchEndX - touchStartX;
-      const minSwipeDistance = 50; // Minimum distance to consider a swipe
-
-      if (Math.abs(swipeDistance) > minSwipeDistance) {
-        if (swipeDistance > 0) {
-          // Swipe right (previous)
-          currentIndex = (currentIndex === 0) ? carouselItems.length - 1 : currentIndex - 1;
-        } else {
-          // Swipe left (next)
-          currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
-        }
-        showSlide(currentIndex);
-      }
-
-      // Reset touch positions
-      touchStartX = 0;
-      touchEndX = 0;
-    });
-
-    // Automatic slide every 5 seconds
-    let autoSlide = setInterval(() => {
-      currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
-      showSlide(currentIndex);
-    }, 5000);
-
-    // Pause on hover
-    carousel.addEventListener('mouseenter', () => clearInterval(autoSlide));
-    carousel.addEventListener('mouseleave', () => {
-      autoSlide = setInterval(() => {
-        currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
-        showSlide(currentIndex);
-      }, 5000);
-    });
-
-    showSlide(currentIndex);
-  }
-
-  // Initialize President Carousel
-  initPresidentCarousel();
 });

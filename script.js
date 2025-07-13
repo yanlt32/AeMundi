@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(animation);
   }
 
-  // Generic Carousel functionality (used for Feedbacks and Eventos)
+  // Generic Carousel functionality (used for Feedbacks, Eventos, and Galeria)
   function initCarousel(carouselSelector) {
     const carousel = document.querySelector(carouselSelector);
     if (!carousel) return;
@@ -67,119 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextBtn = carousel.querySelector('.carousel-btn.next');
     let currentIndex = 0;
     let isTransitioning = false;
-
-    function showSlide(index) {
-      if (isTransitioning) return;
-      isTransitioning = true;
-
-      carouselItems.forEach(item => item.classList.remove('active'));
-      carouselItems[index].classList.add('active');
-      carouselInner.style.transform = `translateX(-${index * 100}%)`;
-
-      setTimeout(() => {
-        isTransitioning = false;
-      }, 500); // Match CSS transition duration (0.5s for testimonials)
-    }
-
-    if (prevBtn && nextBtn) {
-      prevBtn.addEventListener('click', () => {
-        currentIndex = (currentIndex === 0) ? carouselItems.length - 1 : currentIndex - 1;
-        showSlide(currentIndex);
-      });
-
-      nextBtn.addEventListener('click', () => {
-        currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
-        showSlide(currentIndex);
-      });
-
-      let autoSlide = setInterval(() => {
-        currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
-        showSlide(currentIndex);
-      }, 5000);
-
-      carousel.addEventListener('mouseenter', () => clearInterval(autoSlide));
-      carousel.addEventListener('mouseleave', () => {
-        autoSlide = setInterval(() => {
-          currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
-          showSlide(currentIndex);
-        }, 5000);
-      });
-    }
-
-    showSlide(currentIndex);
-  }
-
-  // Initialize Feedbacks carousel for all screen sizes
-  initCarousel('#feedbacks .carousel');
-
-  // Initialize Eventos carousel only on mobile/tablet
-  if (window.innerWidth <= 768) {
-    initCarousel('#eventos .carousel');
-  }
-
-  // Re-initialize carousels on window resize
-  window.addEventListener('resize', () => {
-    // Always ensure Feedbacks carousel is initialized
-    initCarousel('#feedbacks .carousel');
-
-    // Handle Eventos carousel
-    if (window.innerWidth <= 768) {
-      initCarousel('#eventos .carousel');
-    } else {
-      // Reset Eventos carousel styles for timeline on desktop
-      const eventosCarousel = document.querySelector('#eventos .carousel');
-      if (eventosCarousel) {
-        const carouselInner = eventosCarousel.querySelector('.carousel-inner');
-        carouselInner.style.transform = 'translateX(0)';
-        eventosCarousel.querySelectorAll('.carousel-item').forEach(item => {
-          item.style.opacity = '1';
-        });
-      }
-    }
-  });
-
-  // Form submission with EmailJS
-  const form = document.getElementById('contato-form');
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const formData = {
-      nome: document.querySelector('input[name="nome"]').value,
-      email: document.querySelector('input[name="email"]').value,
-      assunto: document.querySelector('input[name="assunto"]').value || 'Sem assunto',
-      mensagem: document.querySelector('textarea[name="mensagem"]').value,
-      time: new Date().toLocaleString('pt-BR')
-    };
-
-    emailjs.send('service_ah5857d', 'template_adarn91', formData)
-      .then(() => {
-        alert('Mensagem enviada com sucesso!');
-        form.reset();
-      }, (error) => {
-        alert('Erro ao enviar a mensagem: ' + error.text);
-      });
-  });
-
-  // Mini Carousel for President Photos in Conversa com o Presidente
-  function initPresidentCarousel() {
-    const carousel = document.querySelector('#conversa-presidente .president-carousel');
-    if (!carousel) {
-      console.error('Carousel element not found. Please check if #conversa-presidente .president-carousel exists in the HTML.');
-      return;
-    }
-
-    const carouselInner = carousel.querySelector('.president-carousel-inner');
-    const carouselItems = carousel.querySelectorAll('.president-carousel-item');
-    let currentIndex = 0;
-    let isTransitioning = false;
     let touchStartX = 0;
     let touchEndX = 0;
-
-    // Verificar se há itens no carrossel
-    if (carouselItems.length === 0) {
-      console.error('No carousel items found. Please ensure elements with class .president-carousel-item exist inside .president-carousel.');
-      return;
-    }
 
     function showSlide(index) {
       if (isTransitioning) return;
@@ -194,20 +83,17 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 500); // Match CSS transition duration (0.5s)
     }
 
-    // Automatic slide every 5 seconds
-    let autoSlide = setInterval(() => {
-      currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
-      showSlide(currentIndex);
-    }, 5000);
+    if (prevBtn && nextBtn) {
+      prevBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex === 0) ? carouselItems.length - 1 : currentIndex - 1;
+        showSlide(currentIndex);
+      });
 
-    // Pause on hover
-    carousel.addEventListener('mouseenter', () => clearInterval(autoSlide));
-    carousel.addEventListener('mouseleave', () => {
-      autoSlide = setInterval(() => {
+      nextBtn.addEventListener('click', () => {
         currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
         showSlide(currentIndex);
-      }, 5000);
-    });
+      });
+    }
 
     // Touch support for swipe
     carousel.addEventListener('touchstart', (e) => {
@@ -238,7 +124,151 @@ document.addEventListener('DOMContentLoaded', () => {
       touchEndX = 0;
     });
 
-    // Initial slide
+    // Automatic slide every 5 seconds
+    let autoSlide = setInterval(() => {
+      currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
+      showSlide(currentIndex);
+    }, 5000);
+
+    // Pause on hover
+    carousel.addEventListener('mouseenter', () => clearInterval(autoSlide));
+    carousel.addEventListener('mouseleave', () => {
+      autoSlide = setInterval(() => {
+        currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
+        showSlide(currentIndex);
+      }, 5000);
+    });
+
+    showSlide(currentIndex);
+  }
+
+  // Initialize carousels
+  initCarousel('#feedbacks .carousel');
+  initCarousel('#galeria .gallery-carousel');
+  if (window.innerWidth <= 768) {
+    initCarousel('#eventos .events-grid');
+  }
+
+  // Re-initialize carousels on window resize
+  window.addEventListener('resize', () => {
+    initCarousel('#feedbacks .carousel');
+    initCarousel('#galeria .gallery-carousel');
+    if (window.innerWidth <= 768) {
+      initCarousel('#eventos .events-grid');
+    } else {
+      // Reset Eventos carousel styles for grid on desktop
+      const eventosCarousel = document.querySelector('#eventos .events-grid');
+      if (eventosCarousel) {
+        const carouselInner = eventosCarousel.querySelector('.carousel-inner');
+        if (carouselInner) {
+          carouselInner.style.transform = 'translateX(0)';
+          eventosCarousel.querySelectorAll('.carousel-item').forEach(item => {
+            item.style.opacity = '1';
+          });
+        }
+      }
+    }
+  });
+
+  // Form submission with EmailJS
+  const form = document.getElementById('contato-form');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const formData = {
+      nome: document.querySelector('input[name="nome"]').value,
+      email: document.querySelector('input[name="email"]').value,
+      assunto: document.querySelector('input[name="assunto"]').value || 'Sem assunto',
+      mensagem: document.querySelector('textarea[name="mensagem"]').value,
+      time: new Date().toLocaleString('pt-BR')
+    };
+
+    emailjs.send('service_ah5857d', 'template_adarn91', formData)
+      .then(() => {
+        alert('Mensagem enviada com sucesso!');
+        form.reset();
+      }, (error) => {
+        alert('Erro ao enviar a mensagem: ' + error.text);
+      });
+  });
+
+  // Mini Carousel for President Photos in Conversa com o Presidente
+  function initPresidentCarousel() {
+    const carousel = document.querySelector('#conversa-presidente .president-carousel');
+    if (!carousel) {
+      console.error('President carousel not found.');
+      return;
+    }
+
+    const carouselInner = carousel.querySelector('.carousel-inner');
+    const carouselItems = carousel.querySelectorAll('.carousel-item');
+    let currentIndex = 0;
+    let isTransitioning = false;
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    if (carouselItems.length === 0) {
+      console.error('No president carousel items found.');
+      return;
+    }
+
+    function showSlide(index) {
+      if (isTransitioning) return;
+      isTransitioning = true;
+
+      carouselItems.forEach(item => item.classList.remove('active'));
+      carouselItems[index].classList.add('active');
+      carouselInner.style.transform = `translateX(-${index * 100}%)`;
+
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 500); // Match CSS transition duration (0.5s)
+    }
+
+    // Touch support for swipe
+    carousel.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    });
+
+    carousel.addEventListener('touchmove', (e) => {
+      touchEndX = e.touches[0].clientX;
+    });
+
+    carousel.addEventListener('touchend', () => {
+      const swipeDistance = touchEndX - touchStartX;
+      const minSwipeDistance = 50; // Minimum distance to consider a swipe
+
+      if (Math.abs(swipeDistance) > minSwipeDistance) {
+        if (swipeDistance > 0) {
+          // Swipe right (previous)
+          currentIndex = (currentIndex === 0) ? carouselItems.length - 1 : currentIndex - 1;
+        } else {
+          // Swipe left (next)
+          currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
+        }
+        showSlide(currentIndex);
+      }
+
+      // Reset touch positions
+      touchStartX = 0;
+      touchEndX = 0;
+    });
+
+    // Automatic slide every 5 seconds
+    let autoSlide = setInterval(() => {
+      currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
+      showSlide(currentIndex);
+    }, 5000);
+
+    // Pause on hover
+    carousel.addEventListener('mouseenter', () => clearInterval(autoSlide));
+    carousel.addEventListener('mouseleave', () => {
+      autoSlide = setInterval(() => {
+        currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
+        showSlide(currentIndex);
+      }, 5000);
+    });
+
     showSlide(currentIndex);
   }
 

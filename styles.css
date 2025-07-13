@@ -1177,7 +1177,7 @@ footer::before {
   border-radius: 10px;
   overflow: hidden;
   position: relative;
-  touch-action: pan-x; /* Permite deslizar com o dedo */
+  
 }
 
 .president-carousel .carousel-inner {

@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize EmailJS with your User ID
+  // Initialize EmailJS
   emailjs.init('wsvc4Dlnoa4wsx3xJ');
 
-  // Hamburger menu functionality
+  // Hamburger menu
   const hamburger = document.querySelector('.hamburger');
   const nav = document.querySelector('nav');
 
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     nav.classList.toggle('active');
   });
 
-  // Smooth scroll for navigation links
+  // Smooth scroll for navigation
   nav.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Custom smooth scroll function
+  // Smooth scroll function
   function smoothScrollTo(targetPosition, duration) {
     const startPosition = window.pageYOffset;
     const distance = targetPosition - startPosition;
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(animation);
   }
 
-  // Generic Carousel functionality (used for Feedbacks, Eventos, and Galeria)
+  // Carousel functionality
   function initCarousel(carouselSelector) {
     const carousel = document.querySelector(carouselSelector);
     if (!carousel) {
@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let touchEndX = 0;
     let touchEndY = 0;
 
-    // Check if carouselItems exist
     if (carouselItems.length === 0) {
       console.error(`No carousel items found for selector: ${carouselSelector}`);
       return;
@@ -85,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isTransitioning) return;
       isTransitioning = true;
 
-      // Ensure index is within bounds
       if (index < 0 || index >= carouselItems.length) {
         console.error(`Invalid slide index: ${index} for ${carouselSelector}`);
         isTransitioning = false;
@@ -98,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       setTimeout(() => {
         isTransitioning = false;
-      }, 500); // Match CSS transition duration (0.5s)
+      }, 500);
     }
 
     if (prevBtn && nextBtn) {
@@ -113,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Touch support for swipe
+    // Touch support
     carousel.addEventListener('touchstart', (e) => {
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
@@ -127,35 +125,30 @@ document.addEventListener('DOMContentLoaded', () => {
     carousel.addEventListener('touchend', (e) => {
       const swipeDistanceX = touchEndX - touchStartX;
       const swipeDistanceY = touchEndY - touchStartY;
-      const minSwipeDistance = 50; // Minimum distance to consider a swipe
-      const maxVerticalSwipe = 50; // Maximum vertical movement to allow horizontal swipe
+      const minSwipeDistance = 50;
+      const maxVerticalSwipe = 50;
 
       if (Math.abs(swipeDistanceX) > minSwipeDistance && Math.abs(swipeDistanceY) < maxVerticalSwipe) {
-        e.preventDefault(); // Prevent default only for horizontal swipes
+        e.preventDefault();
         if (swipeDistanceX > 0) {
-          // Swipe right (previous)
           currentIndex = (currentIndex === 0) ? carouselItems.length - 1 : currentIndex - 1;
         } else {
-          // Swipe left (next)
           currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
         }
         showSlide(currentIndex);
       }
 
-      // Reset touch positions
       touchStartX = 0;
       touchStartY = 0;
       touchEndX = 0;
       touchEndY = 0;
     });
 
-    // Automatic slide every 5 seconds
     let autoSlide = setInterval(() => {
       currentIndex = (currentIndex === carouselItems.length - 1) ? 0 : currentIndex + 1;
       showSlide(currentIndex);
     }, 5000);
 
-    // Pause on hover
     carousel.addEventListener('mouseenter', () => clearInterval(autoSlide));
     carousel.addEventListener('mouseleave', () => {
       autoSlide = setInterval(() => {
@@ -169,36 +162,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize carousels
   initCarousel('#feedbacks .carousel');
-  initCarousel('#galeria .gallery-carousel');
-  if (window.innerWidth <= 768) {
-    initCarousel('#eventos .events-carousel'); // Updated selector
-  }
+  initCarousel('#conversa-presidente .president-carousel');
 
-  // Re-initialize carousels on window resize
-  window.addEventListener('resize', () => {
-    initCarousel('#feedbacks .carousel');
-    initCarousel('#galeria .gallery-carousel');
-    if (window.innerWidth <= 768) {
-      initCarousel('#eventos .events-carousel'); // Updated selector
-    } else {
-      // Reset Eventos carousel styles for grid on desktop
-      const eventosCarousel = document.querySelector('#eventos .events-carousel');
-      if (eventosCarousel) {
-        const carouselInner = eventosCarousel.querySelector('.carousel-inner');
-        if (carouselInner) {
-          carouselInner.style.transform = 'translateX(0)';
-          eventosCarousel.querySelectorAll('.carousel-item').forEach(item => {
-            item.style.opacity = '1';
-          });
-        }
-      }
-    }
-  });
-
-  // Form submission with EmailJS
+  // Form submission
   const form = document.getElementById('contato-form');
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.classList.add('loading');
 
     const formData = {
       nome: document.querySelector('input[name="nome"]').value,
@@ -210,10 +181,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     emailjs.send('service_ah5857d', 'template_adarn91', formData)
       .then(() => {
-        alert('Mensagem enviada com sucesso!');
+        const formMessage = form.querySelector('.form-message');
+        formMessage.classList.add('success');
+        formMessage.textContent = 'Mensagem enviada com sucesso!';
+        formMessage.style.display = 'block';
         form.reset();
+        submitBtn.classList.remove('loading');
+        setTimeout(() => {
+          formMessage.style.display = 'none';
+        }, 3000);
       }, (error) => {
-        alert('Erro ao enviar a mensagem: ' + error.text);
+        const formMessage = form.querySelector('.form-message');
+        formMessage.classList.add('error');
+        formMessage.textContent = 'Erro ao enviar a mensagem: ' + error.text;
+        formMessage.style.display = 'block';
+        submitBtn.classList.remove('loading');
+        setTimeout(() => {
+          formMessage.style.display = 'none';
+        }, 3000);
       });
   });
 });

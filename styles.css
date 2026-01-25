@@ -487,57 +487,50 @@ nav a:hover {
   color: var(--primary-color);
 }
 
-/* Future Projects Section */
+/* Future Projects Section - Área Vazia */
 .future-projects-section {
   background-color: var(--light-color);
 }
 
 .future-projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: 1fr;
   gap: 30px;
 }
 
-.future-project-card {
-  background: var(--white);
-  padding: 30px;
-  border-radius: var(--border-radius);
+.future-projects-empty {
   text-align: center;
-  box-shadow: var(--shadow-sm);
+  padding: 80px 40px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 20px;
+  border: 2px dashed #4a6fa5;
   transition: var(--transition);
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.95);
 }
 
-.future-project-card:hover {
-  transform: translateY(-8px);
+.future-projects-empty:hover {
+  transform: translateY(-5px);
   box-shadow: var(--shadow-md);
 }
 
-.future-project-card i {
-  font-size: 2.5rem;
-  color: var(--primary-color);
+.future-projects-empty i {
+  font-size: 4rem;
+  color: #4a6fa5;
   margin-bottom: 20px;
+  animation: pulse 2s infinite;
 }
 
-.future-project-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-}
-
-.future-project-card p {
-  color: var(--dark-gray);
+.future-projects-empty h3 {
+  color: #2c3e50;
+  font-size: 1.8rem;
   margin-bottom: 15px;
 }
 
-.future-project-date {
-  display: inline-block;
-  background-color: var(--primary-color);
-  color: var(--white);
-  padding: 6px 16px;
-  border-radius: var(--border-radius);
-  font-size: 0.9rem;
-  font-weight: 600;
+.future-projects-empty p {
+  color: #5a6c7d;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
 /* Testimonials Section */
@@ -699,7 +692,7 @@ nav a:hover {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.2);
+    transform: scale(1.1);
   }
   100% {
     transform: scale(1);
@@ -805,7 +798,17 @@ nav a:hover {
   color: var(--dark-gray);
 }
 
+.gallery-button {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin-top: 40px;
+}
+
 /* Contact Section */
+.contact-section {
+  background-color: var(--light-color);
+}
+
 .contact-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -875,65 +878,7 @@ nav a:hover {
   box-shadow: var(--shadow-md);
 }
 
-.contact-form {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 40px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(10px);
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 600;
-  color: var(--secondary-color);
-  margin-bottom: 8px;
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 12px 15px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: var(--border-radius);
-  font-family: inherit;
-  transition: var(--transition);
-  background: rgba(255, 255, 255, 0.5);
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  border-color: var(--primary-color);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(172, 10, 16, 0.1);
-}
-
-.form-group textarea {
-  min-height: 150px;
-  resize: vertical;
-}
-
-.form-message {
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: var(--border-radius);
-  text-align: center;
-  font-size: 1rem;
-}
-
-.form-message.success {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.form-message.error {
-  background-color: #f8d7da;
-  color: #721c24;
-}
+/* Formulário REMOVIDO - apenas mantemos as informações de contato */
 
 /* Footer */
 footer {
@@ -1181,6 +1126,10 @@ footer {
   .president-carousel {
     max-width: 400px;
   }
+
+  .future-projects-empty {
+    padding: 60px 30px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1282,8 +1231,7 @@ footer {
     max-width: 90%;
   }
 
-  .contact-info,
-  .contact-form {
+  .contact-info {
     padding: 25px;
   }
 
@@ -1318,6 +1266,22 @@ footer {
 
   .president-carousel {
     max-width: 100%;
+  }
+
+  .future-projects-empty {
+    padding: 40px 20px;
+  }
+
+  .future-projects-empty i {
+    font-size: 3rem;
+  }
+
+  .future-projects-empty h3 {
+    font-size: 1.5rem;
+  }
+
+  .future-projects-empty p {
+    font-size: 1rem;
   }
 }
 
@@ -1376,8 +1340,16 @@ footer {
     font-size: 1.2rem;
   }
 
-  .future-project-date {
-    font-size: 0.8rem;
+  .future-projects-empty i {
+    font-size: 2.5rem;
+  }
+
+  .future-projects-empty h3 {
+    font-size: 1.3rem;
+  }
+
+  .future-projects-empty p {
+    font-size: 0.9rem;
   }
 
   .testimonials-section .testimonial-card {
@@ -1394,9 +1366,7 @@ footer {
     height: 200px;
   }
 
-  .contact-item p,
-  .contact-form input,
-  .contact-form textarea {
+  .contact-item p {
     font-size: 0.9rem;
   }
 
@@ -1413,5 +1383,17 @@ footer {
 
   .footer-links {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Ajustes para o terceiro projeto */
+.project-card:nth-child(3) .project-badge {
+  background-color: #27ae60;
+}
+
+/* Ajuste para o grid de projetos com 3 cards */
+@media (min-width: 900px) {
+  .projects-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
